@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Exercise PWA</title>
+    <!-- Link to the Manifest file -->
+    <link rel="manifest" href="manifest.json">
+    <!-- Theme color for the browser UI -->
+    <meta name="theme-color" content="#4A90E2">
+    <style>
+        /* Basic styling for the app */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: #333;
+        }
+        .container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+        }
+        h1 {
+            margin-top: 0;
+            color: #4A90E2;
+        }
+        #problem {
+            font-size: 2rem;
+            font-weight: 500;
+            margin: 1.5rem 0;
+        }
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+        #answer {
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 1.2rem;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            box-sizing: border-box; /* Ensures padding doesn't affect width */
+            text-align: center;
+        }
+        #submitBtn {
+            width: 100%;
+            padding: 0.85rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: white;
+            background-color: #4A90E2;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #submitBtn:hover {
+            background-color: #357ABD;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Math Challenge</h1>
+        <p>Solve the following problem:</p>
+        <div id="problem">...</div>
+        <div class="input-group">
+            <input type="number" id="answer" placeholder="Your Answer">
+        </div>
+        <button id="submitBtn">Submit via Email</button>
+    </div>
+
+    <script>
+        // --- Main App Logic ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const problemElement = document.getElementById('problem');
+            const answerElement = document.getElementById('answer');
+            const submitBtn = document.getElementById('submitBtn');
+
+            // 1. Generate a simple math problem
+            const num1 = Math.floor(Math.random() * 10) + 1;
+            const num2 = Math.floor(Math.random() * 10) + 1;
+            const problemText = `${num1} + ${num2} = ?`;
+            problemElement.textContent = problemText;
+
+            // 2. Handle the submit button click
+            submitBtn.addEventListener('click', () => {
+                const userAnswer = answerElement.value;
+                if (!userAnswer) {
+                    // In a real app, you'd show a prettier message.
+                    // alert() is avoided in modern web apps.
+                    answerElement.style.borderColor = 'red';
+                    console.error("Answer cannot be empty.");
+                    return;
+                }
+                answerElement.style.borderColor = '#ccc';
+
+
+                // --- IMPORTANT: Change this to your email address ---
+                const recipientEmail = 'teacher@example.com';
+                const emailSubject = 'Math Exercise Submission';
+                const emailBody = `
+Hello,
+
+Here is my submission for the math problem.
+
+Problem: ${problemText.replace('?', '')}
+My Answer: ${userAnswer}
+
+Thank you!
+                `;
+
+                // 3. Create and trigger the mailto link
+                const mailtoLink = `mailto:${recipientEmail}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+                window.location.href = mailtoLink;
+            });
+        });
+
+        // --- Service Worker Registration ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
+
+</body>
+</html>
